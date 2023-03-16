@@ -1,0 +1,41 @@
+{
+    "name": "ayvazyan10/ameriabankvpos",
+    "description": ":package_description",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Razmik Ayvazyan",
+            "email": "ayvazyan403@gmail.com",
+            "homepage": "https://ayvazyan.pro"
+        }
+    ],
+    "homepage": "https://github.com/ayvazyan10/ameriabankvpos",
+    "keywords": ["Laravel", "AmeriaBankVPOS"],
+    "require": {
+        "illuminate/support": "^8.0 || ^10.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~9.0",
+        "orchestra/testbench": "~7"
+    },
+    "autoload": {
+        "psr-4": {
+            "Ayvazyan10\\AmeriaBankVPOS\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Ayvazyan10\\AmeriaBankVPOS\\Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Ayvazyan10\\AmeriaBankVPOS\\AmeriaBankVPOSServiceProvider"
+            ],
+            "aliases": {
+                "AmeriaBankVPOS": "Ayvazyan10\\AmeriaBankVPOS\\Facades\\AmeriaBankVPOS"
+            }
+        }
+    }
+}
