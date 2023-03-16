@@ -2,17 +2,17 @@
 
 namespace Ayvazyan10\AmeriaBankVPOS\Facades;
 
+use Ayvazyan10\AmeriaBankVPOS\AmeriaBankVPOS;
 use Illuminate\Support\Facades\Facade;
-
-class AmeriaBankVPOS extends Facade
+/**
+ *
+ * @see AmeriaBankVPOS
+ */
+final class AmeriaBankVPOSFacade extends Facade
 {
-    /**
-     * Get the registered name of the component.
-     *
-     * @return string
-     */
     protected static function getFacadeAccessor(): string
     {
         return 'ameriabankvpos';
     }
 }
+

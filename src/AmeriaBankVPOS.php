@@ -36,6 +36,9 @@ class AmeriaBankVPOS
      */
     public function pay(array $data): array
     {
+
+        dd('ok');
+
         $args = [
             "ClientID" => $this->clientid,
             "BackURL" => $this->backurl,
@@ -47,6 +50,8 @@ class AmeriaBankVPOS
             "OrderID" => $data["order_id"],
             "Description" => $data["description"],
         ];
+
+        dd($data);
 
         try {
             $client = Http::post("https://services{$this->mode}.ameriabank.am/VPOS/api/VPOS/InitPayment", $args);
@@ -63,6 +68,9 @@ class AmeriaBankVPOS
      */
     public function check($request): mixed
     {
+        dd($request);
+
+
         $order_id = $request->input('orderID');
         $payment_id = $request->input('paymentID');
 

@@ -2,6 +2,8 @@
 
 namespace Ayvazyan10\AmeriaBankVPOS;
 
+use Ayvazyan10\AmeriaBankVPOS\Facades\AmeriaBankVPOSFacade;
+use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
 
 class AmeriaBankVPOSServiceProvider extends ServiceProvider
@@ -17,6 +19,10 @@ class AmeriaBankVPOSServiceProvider extends ServiceProvider
         // $this->loadViewsFrom(__DIR__.'/../resources/views', 'ayvazyan10');
          $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
         // $this->loadRoutesFrom(__DIR__.'/routes.php');
+
+        AliasLoader::getInstance()->alias('AmeriaBankVPOS', AmeriaBankVPOSFacade::class);
+
+        $this->app->singleton(AmeriaBankVPOS::class);
 
         // Publishing is only necessary when using the CLI.
         if ($this->app->runningInConsole()) {
@@ -37,8 +43,6 @@ class AmeriaBankVPOSServiceProvider extends ServiceProvider
         $this->app->singleton('ameriabankvpos', function ($app) {
             return new AmeriaBankVPOS;
         });
-
-        $this->app->alias(\Ayvazyan10\AmeriaBankVPOS\Facades\AmeriaBankVPOS::class, 'ameriabankvpos');
     }
 
     /**
@@ -46,7 +50,7 @@ class AmeriaBankVPOSServiceProvider extends ServiceProvider
      *
      * @return array
      */
-    public function provides()
+    public function provides(): array
     {
         return ['ameriabankvpos'];
     }
@@ -62,6 +66,10 @@ class AmeriaBankVPOSServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../config/ameriabankvpos.php' => config_path('ameriabankvpos.php'),
         ], 'ameriabankvpos.config');
+
+        $this->publishes([
+            __DIR__.'/../database/migrations' => database_path('migrations'),
+        ], 'ameriabankvpos.migrations');
 
         // Publishing the views.
         /*$this->publishes([
