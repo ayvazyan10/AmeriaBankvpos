@@ -6,4 +6,5 @@ return [
     "Password" => "0000000000000000", // provided by bank
     "Currency" => "051", // currency ISO code (current: AMD)
     "TestMode" => false, // true|false
+    "BackUrl" => 'order.payment.check', // (route: name) redirect back url from bank - success|fail
 ];

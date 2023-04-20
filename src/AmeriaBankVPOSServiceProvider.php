@@ -2,7 +2,7 @@
 
 namespace Ayvazyan10\AmeriaBankVPOS;
 
-use Ayvazyan10\AmeriaBankVPOS\Facades\AmeriaBankVPOSFacade;
+use Ayvazyan10\AmeriaBankVPOS\AmeriaBankVPOS;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
 
@@ -17,12 +17,8 @@ class AmeriaBankVPOSServiceProvider extends ServiceProvider
     {
         // $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'ayvazyan10');
         // $this->loadViewsFrom(__DIR__.'/../resources/views', 'ayvazyan10');
-         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
         // $this->loadRoutesFrom(__DIR__.'/routes.php');
-
-        AliasLoader::getInstance()->alias('AmeriaBankVPOS', AmeriaBankVPOSFacade::class);
-
-        $this->app->singleton(AmeriaBankVPOS::class);
 
         // Publishing is only necessary when using the CLI.
         if ($this->app->runningInConsole()) {
@@ -37,7 +33,9 @@ class AmeriaBankVPOSServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->mergeConfigFrom(__DIR__.'/../config/ameriabankvpos.php', 'ameriabankvpos');
+        require_once __DIR__ . '/helper.php';
+
+        $this->mergeConfigFrom(__DIR__ . '/../config/ameriabankvpos.php', 'ameriabankvpos');
 
         // Register the service the package provides.
         $this->app->singleton('ameriabankvpos', function ($app) {
@@ -64,11 +62,11 @@ class AmeriaBankVPOSServiceProvider extends ServiceProvider
     {
         // Publishing the configuration file.
         $this->publishes([
-            __DIR__.'/../config/ameriabankvpos.php' => config_path('ameriabankvpos.php'),
+            __DIR__ . '/../config/ameriabankvpos.php' => config_path('ameriabankvpos.php'),
         ], 'ameriabankvpos.config');
 
         $this->publishes([
-            __DIR__.'/../database/migrations' => database_path('migrations'),
+            __DIR__ . '/../database/migrations' => database_path('migrations'),
         ], 'ameriabankvpos.migrations');
 
         // Publishing the views.

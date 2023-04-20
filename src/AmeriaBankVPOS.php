@@ -21,13 +21,13 @@ class AmeriaBankVPOS
 
     public function __construct()
     {
-        $this->clientid = config('ameriabank.ClientID');
-        $this->username = config('ameriabank.Username');
-        $this->password = config('ameriabank.Password');
-        $this->backurl = route('order.payment.check');
-        $this->testmode = config('ameriabank.TestMode');
-        $this->currency = config('ameriabank.Currency');
-        $this->mode = config('ameriabank.TestMode') ? 'test' : '';
+        $this->clientid = config('ameriabankvpos.ClientID');
+        $this->username = config('ameriabankvpos.Username');
+        $this->password = config('ameriabankvpos.Password');
+        $this->backurl = route(config('ameriabankvpos.BackUrl'));
+        $this->testmode = config('ameriabankvpos.TestMode');
+        $this->currency = config('ameriabankvpos.Currency');
+        $this->mode = config('ameriabankvpos.TestMode') ? 'test' : '';
     }
 
     /**
@@ -36,7 +36,6 @@ class AmeriaBankVPOS
      */
     public function pay(array $data): array
     {
-
         dd('ok');
 
         $args = [
@@ -57,6 +56,14 @@ class AmeriaBankVPOS
             $client = Http::post("https://services{$this->mode}.ameriabank.am/VPOS/api/VPOS/InitPayment", $args);
         } catch (Exception $e) {
             return dd($e->getMessage());
+        }
+
+        $pay = json_decode($client, true);
+
+        if ($pay['ResponseCode'] === 1) {
+            redirect("https://services.ameriabank.am/VPOS/Payments/Pay?id={$pay['PaymentID']}&lang={$data['user_language']}")->send();
+        } else {
+            redirect()->route('cart.checkout', ['locUtilale' => app()->getLocale()])->with(['order_complete_error' => $pay['ResponseMessage']]);
         }
 
         return json_decode($client, true);
