@@ -1,6 +1,7 @@
 {
     "name": "ayvazyan10/ameriabankvpos",
-    "description": "ArmeriaBank VPOS api service for Laravel",
+    "description": "AmeriaBank VPOS API service for Laravel",
+    "type": "library",
     "license": "MIT",
     "authors": [
         {
@@ -10,13 +11,19 @@
         }
     ],
     "homepage": "https://github.com/ayvazyan10/ameriabankvpos",
-    "keywords": ["Laravel", "AmeriaBankVPOS", "AmeriaBank"],
+    "keywords": [
+        "Laravel",
+        "AmeriaBankVPOS",
+        "AmeriaBank"
+    ],
+    "minimum-stability": "stable",
     "require": {
-        "illuminate/support": "^8.0|^9.0"
+        "php": ">=7.3",
+        "illuminate/support": "^7.0|^8.0|^9.0|^10.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "~9.0",
-        "orchestra/testbench": "~7"
+        "orchestra/testbench": "^5.0|^6.0|^7.0",
+        "phpunit/phpunit": "^8.0|^9.0|^10.0"
     },
     "autoload": {
         "psr-4": {
@@ -25,7 +32,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Ayvazyan10\\AmeriaBankVPOS\\Tests\\": "tests"
+            "Ayvazyan10\\AmeriaBankVPOS\\Tests\\": "tests/"
         }
     },
     "extra": {
