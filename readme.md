@@ -104,6 +104,7 @@ public function handlePaymentResponse(Request $request)
         // For example: $transaction->order_id, $transaction->user_id, etc.
     } else {
         // Handle failed payment
+        // Also can retrieve additional transaction data as needed
     }
 }
 
