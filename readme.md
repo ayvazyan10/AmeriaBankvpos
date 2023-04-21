@@ -4,11 +4,11 @@
 </p>
 
 ## 🚀 Installation
-#### Install the package via Composer:
+#### Install the package via Composer.
 ```` bash
 composer require ayvazyan10/ameriabank-vpos
 ````
-#### Publish the configuration file if automatically publishing not working:
+#### If automatic publishing is not working, then you should release the configuration file.
 ```` bash
 php artisan vendor:publish --provider="Ayvazyan10\AmeriaBankVPOS\AmeriaBankVPOSServiceProvider"
 ````
