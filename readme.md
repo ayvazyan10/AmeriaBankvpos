@@ -120,10 +120,9 @@ Please see [contributing.md](contributing.md) for details and a todolist.
 
 If you discover any security related issues, please email ayvazyan403@gmail.com instead of using the issue tracker.
 
-## Credits
+## Author
 
-- [Razmik Ayvazyan][link-author]
-- [All Contributors][link-contributors]
+- <a href="https://github.com/ayvazyan10">Razmik Ayvazyan</a>
 
 ## License
 
