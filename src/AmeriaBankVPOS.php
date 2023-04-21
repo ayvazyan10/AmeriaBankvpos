@@ -8,81 +8,80 @@ use Exception;
 
 class AmeriaBankVPOS
 {
+    private const PROVIDER = 'AMERIABANK';
     /**
      * @var string|mixed
      */
-    public string $clientid;
-    public string $username;
-    public string $password;
-    public string $backurl;
-    public bool $testmode;
-    public string $currency;
-    public string $mode;
+    private string $clientId;
+    private string $username;
+    private string $password;
+    private string $backUrl;
+    private bool $testMode;
+    private string $currency;
+    private string $mode;
+    private string $language;
 
     public function __construct()
     {
-        $this->clientid = config('ameriabankvpos.ClientID');
+        $this->clientId = config('ameriabankvpos.ClientID');
         $this->username = config('ameriabankvpos.Username');
         $this->password = config('ameriabankvpos.Password');
-        $this->backurl = route(config('ameriabankvpos.BackUrl'));
-        $this->testmode = config('ameriabankvpos.TestMode');
+        $this->backUrl = route(config('ameriabankvpos.BackUrl'));
+        $this->testMode = config('ameriabankvpos.TestMode');
         $this->currency = config('ameriabankvpos.Currency');
+        $this->language = config('ameriabankvpos.Language');
         $this->mode = config('ameriabankvpos.TestMode') ? 'test' : '';
     }
 
     /**
-     * @param array $data
-     * @return array
+     * @param int|float $amount // Amount to Charge
+     * @param int $orderId // Payment Unique Order ID
+     * @param string|null $description // Description for payment
+     * @param string|null $language // Language to display on AMERIABANK payment interface
+     * @return void // Redirecting or throwing Exception
+     * @throws Exception
      */
-    public function pay(array $data): array
+    public function pay(int|float $amount, int $orderId, string $description = null, string $language = null): void
     {
-        dd('ok');
-
         $args = [
-            "ClientID" => $this->clientid,
-            "BackURL" => $this->backurl,
+            "ClientID" => $this->clientId,
+            "BackURL" => $this->backUrl,
             "Username" => $this->username,
             "Password" => $this->password,
-            "TestMode" => $this->testmode,
+            "TestMode" => $this->testMode,
             "Currency" => $this->currency,
-            "Amount" => $data["pay_amount"],
-            "OrderID" => $data["order_id"],
-            "Description" => $data["description"],
+            "Amount" => $amount,
+            "OrderID" => $orderId,
+            "Description" => $description,
         ];
-
-        dd($data);
 
         try {
             $client = Http::post("https://services{$this->mode}.ameriabank.am/VPOS/api/VPOS/InitPayment", $args);
         } catch (Exception $e) {
-            return dd($e->getMessage());
+            throw new Exception(self::PROVIDER . ' API error: ' . $e->getMessage());
         }
 
-        $pay = json_decode($client, true);
+        $response = json_decode($client, true);
 
-        if ($pay['ResponseCode'] === 1) {
-            redirect("https://services.ameriabank.am/VPOS/Payments/Pay?id={$pay['PaymentID']}&lang={$data['user_language']}")->send();
+        if ($response['ResponseCode'] === 1) {
+            redirect("https://services.ameriabank.am/VPOS/Payments/Pay?id={$response['PaymentID']}&lang={$language}")->send();
         } else {
-            redirect()->route('cart.checkout', ['locUtilale' => app()->getLocale()])->with(['order_complete_error' => $pay['ResponseMessage']]);
+            throw new Exception(self::PROVIDER . ' API error: ' . $response['ResponseMessage']);
         }
-
-        return json_decode($client, true);
     }
 
     /**
      * @param $request
-     * @return mixed
+     * @return string
+     * @throws Exception
      */
-    public function check($request): mixed
+    public function check($request): string
     {
-        dd($request);
-
-
         $order_id = $request->input('orderID');
         $payment_id = $request->input('paymentID');
 
         if (empty($order_id)) {
-            exit('Unexpected error, please contact to website support.');
+            throw new Exception(self::PROVIDER . ' API error: Empty OrderID field');
         }
 
         $args = [
@@ -91,7 +90,11 @@ class AmeriaBankVPOS
             "Password" => $this->password,
         ];
 
-        $client = Http::post("https://services{$this->mode}.ameriabank.am/VPOS/api/VPOS/GetPaymentDetails", $args);
+        try {
+            $client = Http::post("https://services{$this->mode}.ameriabank.am/VPOS/api/VPOS/GetPaymentDetails", $args);
+        } catch (Exception $e) {
+            throw new Exception(self::PROVIDER . ' API error: ' . $e->getMessage());
+        }
 
         $response = json_decode($client, true);
 
@@ -99,9 +102,13 @@ class AmeriaBankVPOS
         $transaction->order_id = $response["OrderID"];
         $transaction->user_id = auth()->user()->id ? auth()->user()->id : null;
         $transaction->payment_id = $payment_id;
-        $transaction->Provider = 'AMERIABANK';
+        $transaction->Provider = self::PROVIDER;
         $transaction->fill($response)->save();
 
-        return $response;
+        if ($response["ResponseCode"] != '00') {
+            return 'FAIL';
+        }
+
+        return 'SUCCESS';
     }
 }
