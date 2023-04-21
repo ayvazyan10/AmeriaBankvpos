@@ -54,7 +54,7 @@ if ($response['status'] === 'SUCCESS') {
     $payment_id = $transaction->payment_id;
     $provider = $transaction->Provider;
     // more fields as needed ...
-    // you can find all fields in amerabank_transactions table
+    // you can find all fields in ameriabank_transactions table
 }
 ````
 ## 📋 Statuses
