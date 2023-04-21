@@ -71,7 +71,7 @@ use Ayvazyan10\AmeriaBankVPOS\Facades\AmeriaBankVPOS;
 
 $amount = 100; // minimum amount while testing is 10 AMD
 $orderId = 1; // in test mode order id should be from 2923001 to 2924000
-$description = 'Test Payment';
+$description = 'Test Payment'; // optional
 
 AmeriaBankVPOS::pay($amount, $orderId, $description);
 ```
