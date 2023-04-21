@@ -53,6 +53,8 @@ if ($response['status'] === 'SUCCESS') {
     $user_id = $transaction->user_id;
     $payment_id = $transaction->payment_id;
     $provider = $transaction->Provider;
+    // more fields as needed ...
+    // you can find all fields in amerabank_transactions table
 }
 ````
 ## 📋 Statuses
@@ -60,6 +62,52 @@ This package returns the payment status as a string in the status key of the res
 
 - SUCCESS: The payment has been successfully processed.
 - FAIL: The payment failed or was declined.
+
+## 📖 Examples
+Below are some examples on how to use the package in different scenarios.
+### Example 1: Simple Payment
+``` php
+use Ayvazyan10\AmeriaBankVPOS\Facades\AmeriaBankVPOS;
+
+$amount = 100; // minimum amount while testing is 10 AMD
+$orderId = 1; // in test mode order id should be from 2923001 to 2924000
+$description = 'Test Payment';
+
+AmeriaBankVPOS::pay($amount, $orderId, $description);
+```
+### Example 2: Payment with Custom Currency and Language
+``` php
+use Ayvazyan10\AmeriaBankVPOS\Facades\AmeriaBankVPOS;
+
+$amount = 100;
+$orderId = 1;
+$description = 'Test Payment'; // optional
+$currency = 'USD'; // optional
+$language = 'en'; // optional
+
+AmeriaBankVPOS::pay($amount, $orderId, $description, $currency, $language);
+```
+### Example 3: Handling the Payment Response
+```` php
+use Ayvazyan10\AmeriaBankVPOS\Facades\AmeriaBankVPOS;
+use Illuminate\Http\Request;
+
+// In your controller method, where you handle the payment response
+public function handlePaymentResponse(Request $request)
+{
+    $response = AmeriaBankVPOS::check($request);
+
+    if ($response['status'] === 'SUCCESS') {
+        // Handle successful payment
+        $transaction = $response['transaction'];
+        // You can retrieve additional transaction data as needed
+        // For example: $transaction->order_id, $transaction->user_id, etc.
+    } else {
+        // Handle failed payment
+    }
+}
+
+````
 
 ## Contributing
 
