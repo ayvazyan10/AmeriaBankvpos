@@ -12,7 +12,7 @@ class AmeriaBankVPOSFacade extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
-        return 'ameriabankvpos';
+        return 'ameriabank-vpos';
     }
 }
 

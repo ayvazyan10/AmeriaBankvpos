@@ -1,31 +1,65 @@
-# AmeriaBankVPOS
+<h1 align="left">AmeriaBank VPOS Laravel Package</h1>
+<p align="left">
+  This package provides a simple and convenient integration with AmeriaBank VPOS for Laravel applications.
+</p>
 
-[![Latest Version on Packagist][ico-version]][link-packagist]
-[![Total Downloads][ico-downloads]][link-downloads]
-[![Build Status][ico-travis]][link-travis]
-[![StyleCI][ico-styleci]][link-styleci]
+## 🚀 Installation
+#### Install the package via Composer:
+```` bash
+composer require ayvazyan10/ameriabank-vpos
+````
+#### Publish the configuration file if automatically publishing not working:
+```` bash
+php artisan vendor:publish --provider="Ayvazyan10\AmeriaBankVPOS\AmeriaBankVPOSServiceProvider"
+````
+This will create a config/ameriabankvpos.php file in your application.
 
-This is where your description should go. Take a look at [contributing.md](contributing.md) to see a to do list.
+## ⚙️ Configuration
+After publishing the configuration file, you should set your AmeriaBank VPOS credentials and options in the config/ameriabankvpos.php file or in your .env file:
+```` ini
+AMERIABANKVPOS_CLIENT_ID=your_client_id
+AMERIABANKVPOS_USERNAME=your_username
+AMERIABANKVPOS_PASSWORD=your_password
+AMERIABANKVPOS_BACK_URL=your_back_url_route_name
+AMERIABANKVPOS_TEST_MODE=true_or_false
+AMERIABANKVPOS_CURRENCY=your_currency
+AMERIABANKVPOS_LANGUAGE=your_language
+````
+## 📚 Usage
+Here is an example of how to use the AmeriaBankVPOS facade or helper in your Laravel application:
+```` php
+use Ayvazyan10\AmeriaBankVPOS\Facades\AmeriaBankVPOS;
 
-## Installation
+// Process the payment with facade and redirect to AmeriaBank payment interface
+AmeriaBankVPOS::pay($amount, $orderId, $description, $currency, $language);
 
-Via Composer
+// or with helper
 
-``` bash
-composer require ayvazyan10/ameriabankvpos
-```
+// Process the payment with helper and redirect to AmeriaBank payment interface
+ameriabank()->pay($amount, $orderId, $description, $currency, $language);
 
-## Usage
+// Check the payment status and return the transaction details
+$response = AmeriaBankVPOS::check($request);
 
-## Change log
+// or with helper
 
-Please see the [changelog](changelog.md) for more information on what has changed recently.
+$response = ameriabank()->check($request);
 
-## Testing
+// Retrieve data from the transaction
+if ($response['status'] === 'SUCCESS') {
+    $transaction = $response['transaction'];
 
-``` bash
-$ composer test
-```
+    $order_id = $transaction->order_id;
+    $user_id = $transaction->user_id;
+    $payment_id = $transaction->payment_id;
+    $provider = $transaction->Provider;
+}
+````
+## 📋 Statuses
+This package returns the payment status as a string in the status key of the response array. The possible statuses are:
+
+- SUCCESS: The payment has been successfully processed.
+- FAIL: The payment failed or was declined.
 
 ## Contributing
 
@@ -33,25 +67,13 @@ Please see [contributing.md](contributing.md) for details and a todolist.
 
 ## Security
 
-If you discover any security related issues, please email author@email.com instead of using the issue tracker.
+If you discover any security related issues, please email ayvazyan403@gmail.com instead of using the issue tracker.
 
 ## Credits
 
-- [Author Name][link-author]
+- [Razmik Ayvazyan][link-author]
 - [All Contributors][link-contributors]
 
 ## License
 
 MIT. Please see the [license file](license.md) for more information.
-
-[ico-version]: https://img.shields.io/packagist/v/ayvazyan10/ameriabankvpos.svg?style=flat-square
-[ico-downloads]: https://img.shields.io/packagist/dt/ayvazyan10/ameriabankvpos.svg?style=flat-square
-[ico-travis]: https://img.shields.io/travis/ayvazyan10/ameriabankvpos/master.svg?style=flat-square
-[ico-styleci]: https://styleci.io/repos/12345678/shield
-
-[link-packagist]: https://packagist.org/packages/ayvazyan10/ameriabankvpos
-[link-downloads]: https://packagist.org/packages/ayvazyan10/ameriabankvpos
-[link-travis]: https://travis-ci.org/ayvazyan10/ameriabankvpos
-[link-styleci]: https://styleci.io/repos/12345678
-[link-author]: https://github.com/ayvazyan10
-[link-contributors]: ../../contributors

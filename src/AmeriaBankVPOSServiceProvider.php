@@ -2,7 +2,7 @@
 
 namespace Ayvazyan10\AmeriaBankVPOS;
 
-use Ayvazyan10\AmeriaBankVPOS\AmeriaBankVPOS;
+use Ayvazyan10\AmeriaBankVPOS\Facades\AmeriaBankVPOSFacade;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
 
@@ -24,6 +24,9 @@ class AmeriaBankVPOSServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->bootForConsole();
         }
+
+        $loader = AliasLoader::getInstance();
+        $loader->alias('AmeriaBankVPOS', AmeriaBankVPOSFacade::class);
     }
 
     /**
@@ -38,7 +41,7 @@ class AmeriaBankVPOSServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__ . '/../config/ameriabankvpos.php', 'ameriabankvpos');
 
         // Register the service the package provides.
-        $this->app->singleton('ameriabankvpos', function ($app) {
+        $this->app->bind('ameriabank-vpos', function ($app) {
             return new AmeriaBankVPOS;
         });
     }
@@ -50,7 +53,7 @@ class AmeriaBankVPOSServiceProvider extends ServiceProvider
      */
     public function provides(): array
     {
-        return ['ameriabankvpos'];
+        return ['ameriabank-vpos'];
     }
 
     /**
