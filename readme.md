@@ -109,6 +109,9 @@ public function handlePaymentResponse(Request $request)
 
 ````
 
+## 🛠️ Extending and Customizing
+If you need to extend or customize the package behavior, you can create your own class that extends the AmeriaBankVPOS class and override the methods as needed. Make sure to update the AmeriaBankVPOS alias in config/app.php to point to your custom class.
+
 ## Contributing
 
 Please see [contributing.md](contributing.md) for details and a todolist.
