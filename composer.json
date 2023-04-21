@@ -1,6 +1,6 @@
 {
     "name": "ayvazyan10/ameriabankvpos",
-    "description": ":package_description",
+    "description": "ArmeriaBank VPOS api service for Laravel",
     "license": "MIT",
     "authors": [
         {
