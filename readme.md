@@ -6,16 +6,19 @@
 ## 🚀 Installation
 #### Install the package via Composer.
 ```` bash
-composer require ayvazyan10/ameriabank-vpos
+composer require ayvazyan10/ameriabankvpos
 ````
 #### If automatic publishing is not working, then you should release the configuration file.
 ```` bash
 php artisan vendor:publish --provider="Ayvazyan10\AmeriaBankVPOS\AmeriaBankVPOSServiceProvider"
 ````
-This will create a config/ameriabankvpos.php file in your application.
+This will create a [config/ameriabankvpos.php] [database/migrations] files in your application.
 
 ## ⚙️ Configuration
-After publishing the configuration file, you should set your AmeriaBank VPOS credentials and options in the config/ameriabankvpos.php file or in your .env file:
+After publishing the configuration file, you should create a table for transactions and set your AmeriaBank VPOS credentials/options in the config/ameriabankvpos.php file or in your .env file:
+```` bash
+php artisan migrate
+````
 ```` ini
 AMERIABANKVPOS_CLIENT_ID=your_client_id
 AMERIABANKVPOS_USERNAME=your_username
