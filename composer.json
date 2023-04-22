@@ -13,8 +13,9 @@
     "homepage": "https://github.com/ayvazyan10/ameriabankvpos",
     "keywords": [
         "Laravel",
-        "AmeriaBankVPOS",
-        "AmeriaBank"
+        "AmeriaBank",
+        "VPOS",
+        "Payments"
     ],
     "require": {
         "php": ">=7.3",
