@@ -13,12 +13,11 @@ composer require ayvazyan10/ameriabankvpos
 php artisan vendor:publish --provider="Ayvazyan10\AmeriaBankVPOS\AmeriaBankVPOSServiceProvider"
 ````
 This will create a [config/ameriabankvpos.php] and [database/migrations] files in your application.
-
-## ⚙️ Configuration
-After publishing the configuration file and migration, you should create a table for transactions and set your AmeriaBank VPOS credentials/options in the config/ameriabankvpos.php file or in your .env file:
 ```` bash
 php artisan migrate
 ````
+## ⚙️ Configuration
+After publishing the configuration file, you should set your AmeriaBank VPOS credentials/options in the config/ameriabankvpos.php file or in your .env file:
 ```` ini
 AMERIABANKVPOS_CLIENT_ID=your_client_id
 AMERIABANKVPOS_USERNAME=your_username
