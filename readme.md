@@ -109,7 +109,27 @@ public function handlePaymentResponse(Request $request)
         // Also can retrieve additional transaction data as needed
     }
 }
+````
+### Example 4: Getting the Payment Details
+```` php
+use Ayvazyan10\AmeriaBankVPOS\Facades\AmeriaBankVPOS;
+use Exception;
 
+// In your controller method or anywhere else
+public function giveMeID($payment_id)
+{
+    try {
+        // Actual payment ID to be retrieved
+        $paymentDetails = AmeriaBankVPOS::getPaymentDetails($paymentId);
+        
+        // Will return details in array
+        // Handle payment details as needed
+        // For example: $paymentDetails['ApprovedAmount'], $paymentDetails['Description'], etc...
+    } catch (Exception $e) {
+        // Handle exception as needed
+        // For example: Log the error or return an error response
+    }
+}
 ````
 
 ## 🛠️ Extending and Customizing
