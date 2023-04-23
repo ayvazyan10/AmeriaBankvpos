@@ -3,6 +3,8 @@
   This package provides a simple and convenient integration with AmeriaBank VPOS for Laravel applications.
 </p>
 
+[![Buy me a coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-Donate-yellow?style=for-the-badge&logo=buymeacoffee)](https://www.buymeacoffee.com/ayvazyan403)
+
 ### 🚀 Installation
 #### Install the package via Composer.
 ```` bash
