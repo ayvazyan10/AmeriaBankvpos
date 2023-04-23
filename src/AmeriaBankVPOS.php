@@ -6,7 +6,7 @@ use Ayvazyan10\Models\AmeriaBankTransaction;
 use Illuminate\Support\Facades\Http;
 use Exception;
 
-abstract class AmeriaBankVPOS
+class AmeriaBankVPOS
 {
     protected const PROVIDER = 'AMERIABANK';
     /**
