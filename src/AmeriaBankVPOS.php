@@ -3,13 +3,11 @@
 namespace Ayvazyan10\AmeriaBankVPOS;
 
 use Ayvazyan10\Models\AmeriaBankTransaction;
-use BadMethodCallException;
 use Illuminate\Support\Facades\Http;
 use Exception;
 
-class AmeriaBankVPOS
+class AmeriaBankVPOS extends AmeriaMethods implements AmeriaInterface
 {
-    protected const PROVIDER = 'AMERIABANK';
     /**
      * @var string|mixed
      */
@@ -20,6 +18,7 @@ class AmeriaBankVPOS
     protected string $currency;
     protected string $mode;
     protected string $language;
+    protected string $PROVIDER;
 
     /**
      * AmeriaBankVPOS constructor.
@@ -33,24 +32,7 @@ class AmeriaBankVPOS
         $this->currency = config('ameriabankvpos.Currency');
         $this->language = config('ameriabankvpos.Language');
         $this->mode = config('ameriabankvpos.TestMode') ? 'test' : '';
-    }
-
-    /**
-     * Handle dynamic method calls on the class.
-     *
-     * @param string $name The name of the method being called
-     * @param array $arguments An array of arguments passed to the method
-     * @return mixed The result of the called method
-     *
-     * @throws BadMethodCallException If the requested method does not exist
-     */
-    public function __call($name, $arguments)
-    {
-        $class = __NAMESPACE__ . '\\Methods\\' . ucfirst($name);
-        if (class_exists($class)) {
-            return (new $class($this))->{$name}(...$arguments);
-        }
-        throw new BadMethodCallException("Method {$name} does not exist.");
+        $this->PROVIDER = 'AMERIABANK';
     }
 
     /**
@@ -61,12 +43,12 @@ class AmeriaBankVPOS
      * @return array // Response data as an associative array
      * @throws Exception // If any error occurs during the API request
      */
-    protected function sendRequest(string $url, array $parameters): array
+    final protected function sendRequest(string $url, array $parameters): array
     {
         try {
             $client = Http::post($url, $parameters);
         } catch (Exception $e) {
-            throw new Exception(self::PROVIDER . ' API error: ' . $e->getMessage());
+            throw new Exception($this->PROVIDER . ' API error: ' . $e->getMessage());
         }
 
         return json_decode($client->body(), true);
@@ -79,13 +61,13 @@ class AmeriaBankVPOS
      * @param string $payment_id // Payment ID received from the API
      * @return AmeriaBankTransaction // Saved transaction object
      */
-    protected function saveTransaction(array $response, string $payment_id): AmeriaBankTransaction
+    final protected function saveTransaction(array $response, string $payment_id): AmeriaBankTransaction
     {
         $transaction = new AmeriaBankTransaction;
         $transaction->order_id = $response["OrderID"];
         $transaction->user_id = optional(auth()->user())->id;
         $transaction->payment_id = $payment_id;
-        $transaction->Provider = self::PROVIDER;
+        $transaction->Provider = $this->PROVIDER;
         $transaction->fill($response)->save();
 
         return $transaction;
