@@ -3,7 +3,7 @@
   This package provides a simple and convenient integration with AmeriaBank VPOS for Laravel applications.
 </p>
 
-## 🚀 Installation
+### 🚀 Installation
 #### Install the package via Composer.
 ```` bash
 composer require ayvazyan10/ameriabankvpos
@@ -16,7 +16,7 @@ This will create a [config/ameriabankvpos.php] and [database/migrations] files i
 ```` bash
 php artisan migrate
 ````
-## ⚙️ Configuration
+### ⚙️ Configuration
 After publishing the configuration file, you should set your AmeriaBank VPOS credentials/options in the config/ameriabankvpos.php file or in your .env file:
 ```` ini
 AMERIABANKVPOS_CLIENT_ID=your_client_id
@@ -27,7 +27,7 @@ AMERIABANKVPOS_TEST_MODE=true_or_false
 AMERIABANKVPOS_CURRENCY=your_currency
 AMERIABANKVPOS_LANGUAGE=your_language
 ````
-## 📚 Usage
+### 📚 Usage
 Here is an example of how to use the AmeriaBankVPOS facade or helper in your Laravel application:
 ```` php
 use Ayvazyan10\AmeriaBankVPOS\Facades\AmeriaBankVPOS;
@@ -59,13 +59,13 @@ if ($response['status'] === 'SUCCESS') {
     // you can find all fields in ameriabank_transactions table
 }
 ````
-## 📋 Statuses
+### 📋 Statuses
 This package returns the payment status as a string in the status key of the response array. The possible statuses are:
 
 - SUCCESS: The payment has been successfully processed.
 - FAIL: The payment failed or was declined.
 
-## ⚡ All Methods
+### ⚡ All Methods
 ```` php
 public function cancelPayment(int|string $paymentId): array;
 
@@ -84,7 +84,7 @@ public function pay(
 public function refund(int|string $paymentId, int|float $refundAmount): array;
 ````
 
-## 📖 Examples
+### 📖 Examples
 Below are some examples on how to use the package in different scenarios.
 ### Example 1: Simple Payment
 ``` php
@@ -150,8 +150,62 @@ public function giveMeID($payment_id)
     }
 }
 ````
+### Example 5: Refunding a specific payment
+```` php
+use Ayvazyan10\AmeriaBankVPOS\Facades\AmeriaBankVPOS;
+use Exception;
 
-## 🛠️ Extending and Customizing
+// In your controller method or anywhere else
+public function refundPayment($paymentId, $refundAmount)
+{
+    try {
+        // Refund a specific payment partially
+        $refundDetails = AmeriaBankVPOS::refund($paymentId, $refundAmount);
+        
+        // Will return refund status and details in array
+        // Handle refund details as needed
+        // For example: $refundDetails['status'], $refundDetails['response']['ResponseCode'], etc...
+    } catch (Exception $e) {
+        // Handle exception as needed
+        // For example: Log the error or return an error response
+    }
+}
+````
+This method sends an API request to refund a specific payment partially. It takes two parameters:
+
+$paymentId: The ID of the payment to be refunded. This parameter is required and can be an integer or string value.
+$refundAmount: The amount to be refunded. This parameter is required and can be an integer or float value.
+The method returns an associative array with two keys:
+
+"status": Indicates the status of the refund operation. Possible values are "SUCCESS" or "FAIL".
+"response": Contains the response data from the API. If the refund operation is successful, the response data will contain details about the refunded amount, otherwise it will contain an error message.
+If an error occurs during the API request, the method will throw an exception with a message describing the error.
+### Example 6: Canceling payment
+```` php
+use Ayvazyan10\AmeriaBankVPOS\Facades\AmeriaBankVPOS;
+use Exception;
+
+// In your controller method or anywhere else
+public function cancelPayment($paymentId)
+{
+    try {
+        // Cancel a specific payment
+        $cancellationDetails = AmeriaBankVPOS::cancelPayment($paymentId);
+        
+        // Will return cancellation status and details in array
+        // Handle cancellation details as needed
+        // For example: $cancellationDetails['status'], $cancellationDetails['response']['ResponseCode'], etc...
+    } catch (Exception $e) {
+        // Handle exception as needed
+        // For example: Log the error or return an error response
+    }
+}
+````
+In this example, the cancelPayment method is called with the $paymentId parameter. Inside the try block, the AmeriaBankVPOS::cancelPayment() method is called with the provided payment ID to initiate a payment cancellation operation. The method returns an associative array with two keys: "status" and "response". These keys contain the cancellation status and details respectively.
+
+After calling the cancelPayment method, you can handle the returned details as needed. For example, you can check the "status" key to see if the cancellation was successful or not, and use the "response" key to get more details about the cancellation operation. In case an exception is thrown during the API request, the catch block will be executed and you can handle the error as needed, such as logging it or returning an error response.
+
+### 🛠️ Extending and Customizing
 If you need to extend or customize the package behavior, you can create your own class that extends the AmeriaBankVPOS class and override the methods as needed. Make sure to update the AmeriaBankVPOS alias in config/app.php to point to your custom class.
 
 ## Contributing
