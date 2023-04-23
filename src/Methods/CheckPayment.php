@@ -5,7 +5,7 @@ namespace Ayvazyan10\AmeriaBankVPOS\Methods;
 use Ayvazyan10\AmeriaBankVPOS\AmeriaBankVPOS;
 use Exception;
 
-class AmeriaCheck extends AmeriaBankVPOS
+class CheckPayment extends AmeriaBankVPOS
 {
     /**
      * Check the payment status and return the transaction details.

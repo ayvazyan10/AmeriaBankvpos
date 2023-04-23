@@ -6,7 +6,7 @@ use Ayvazyan10\AmeriaBankVPOS\AmeriaBankVPOS;
 use Exception;
 use Illuminate\Support\Facades\Http;
 
-class AmeriaPaymentDetails extends AmeriaBankVPOS
+class GetPaymentDetails extends AmeriaBankVPOS
 {
     /**
      * Get the details of a specific payment.

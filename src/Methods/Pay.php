@@ -6,7 +6,7 @@ use Ayvazyan10\AmeriaBankVPOS\AmeriaBankVPOS;
 use Exception;
 use Illuminate\Support\Facades\Http;
 
-class AmeriaPay extends AmeriaBankVPOS
+class Pay extends AmeriaBankVPOS
 {
     /**
      * Process the payment and redirect to AMERIABANK payment interface.
@@ -20,10 +20,10 @@ class AmeriaPay extends AmeriaBankVPOS
      */
     public function pay(
         int|float $amount,
-        int $orderId,
-        string $description = null,
-        string $currency = null,
-        string $language = null
+        int       $orderId,
+        string    $description = null,
+        string    $currency = null,
+        string    $language = null
     ): void
     {
         $parameters = [

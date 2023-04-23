@@ -5,26 +5,24 @@ namespace Ayvazyan10\AmeriaBankVPOS\Methods;
 use Ayvazyan10\AmeriaBankVPOS\AmeriaBankVPOS;
 use Exception;
 
-class AmeriaRefund extends AmeriaBankVPOS
+class CancelPayment extends AmeriaBankVPOS
 {
     /**
-     * Refund a specific payment partially.
+     * Cancel a specific payment.
      *
-     * @param int|string $paymentId // Payment ID to be refunded
-     * @param int|float $refundAmount // Refund amount
-     * @return array // Array containing refund status and details
+     * @param int|string $paymentId // Payment ID to be canceled
+     * @return array // Array containing cancellation status and details
      * @throws Exception // If any error occurs during the API request
      */
-    public function refund(int|string $paymentId, int|float $refundAmount): array
+    public function cancelPayment(int|string $paymentId): array
     {
         $parameters = [
             "PaymentID" => $paymentId,
             "Username" => $this->username,
             "Password" => $this->password,
-            "Amount" => $refundAmount
         ];
 
-        $response = $this->sendRequest("https://services{$this->mode}.ameriabank.am/VPOS/api/VPOS/RefundPayment", $parameters);
+        $response = $this->sendRequest("https://services{$this->mode}.ameriabank.am/VPOS/api/VPOS/CancelPayment", $parameters);
 
         if ($response["ResponseCode"] != '00') {
             return [

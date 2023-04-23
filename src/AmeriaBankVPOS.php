@@ -3,6 +3,7 @@
 namespace Ayvazyan10\AmeriaBankVPOS;
 
 use Ayvazyan10\Models\AmeriaBankTransaction;
+use BadMethodCallException;
 use Illuminate\Support\Facades\Http;
 use Exception;
 
@@ -32,6 +33,24 @@ class AmeriaBankVPOS
         $this->currency = config('ameriabankvpos.Currency');
         $this->language = config('ameriabankvpos.Language');
         $this->mode = config('ameriabankvpos.TestMode') ? 'test' : '';
+    }
+
+    /**
+     * Handle dynamic method calls on the class.
+     *
+     * @param string $name The name of the method being called
+     * @param array $arguments An array of arguments passed to the method
+     * @return mixed The result of the called method
+     *
+     * @throws BadMethodCallException If the requested method does not exist
+     */
+    public function __call($name, $arguments)
+    {
+        $class = __NAMESPACE__ . '\\Methods\\' . ucfirst($name);
+        if (class_exists($class)) {
+            return (new $class($this))->{$name}(...$arguments);
+        }
+        throw new BadMethodCallException("Method {$name} does not exist.");
     }
 
     /**
