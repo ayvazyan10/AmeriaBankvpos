@@ -5,6 +5,6 @@ use Ayvazyan10\AmeriaBankVPOS\AmeriaBankVPOS;
 if (!function_exists('ameriabank')) {
     function ameriabank(): AmeriaBankVPOS
     {
-        return app('ameriabankvpos');
+        return app('ameriabank-vpos');
     }
 }
