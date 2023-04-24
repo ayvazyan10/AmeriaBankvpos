@@ -2,7 +2,7 @@
 
 namespace Ayvazyan10\AmeriaBankVPOS;
 
-use Ayvazyan10\AmeriaBankVPOS\Facades\AmeriaBankVPOSFacade;
+use Ayvazyan10\AmeriaBankVPOS\Facades\AmeriaBankVPOS as AmeriaFacade;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
 
@@ -26,7 +26,7 @@ class AmeriaBankVPOSServiceProvider extends ServiceProvider
         }
 
         $loader = AliasLoader::getInstance();
-        $loader->alias('AmeriaBankVPOS', AmeriaBankVPOSFacade::class);
+        $loader->alias('AmeriaBankVPOS', AmeriaFacade::class);
     }
 
     /**

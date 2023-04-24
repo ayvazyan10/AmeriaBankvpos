@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Facade;
  *
  * @see AmeriaBankVPOS
  */
-class AmeriaBankVPOSFacade extends Facade
+class AmeriaBankVPOS extends Facade
 {
     protected static function getFacadeAccessor(): string
     {

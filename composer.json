@@ -42,7 +42,7 @@
                 "Ayvazyan10\\AmeriaBankVPOS\\AmeriaBankVPOSServiceProvider"
             ],
             "aliases": {
-                "AmeriaBankVPOS": "Ayvazyan10\\AmeriaBankVPOS\\Facades\\AmeriaBankVPOSFacade"
+                "AmeriaBankVPOS": "AmeriaBankVPOS"
             }
         }
     }
