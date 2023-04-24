@@ -107,7 +107,7 @@ use Ayvazyan10\AmeriaBankVPOS\Facades\AmeriaBankVPOS;
 $amount = 100;
 $orderId = 1;
 $description = 'Test Payment'; // optional
-$currency = 'USD'; // optional
+$currency = '840'; // optional - currency ISO code (current:USD)
 $language = 'en'; // optional
 
 AmeriaBankVPOS::pay($amount, $orderId, $description, $currency, $language);
