@@ -50,7 +50,7 @@ class AmeriaMethods
         $payment_id = $request->input('paymentID');
 
         if (empty($order_id)) {
-            throw new Exception($this->PROVIDER . ' API error: Empty OrderID field');
+            throw new Exception(AmeriaBankVPOS::PROVIDER . ' API error: Empty OrderID field');
         }
 
         $parameters = [
@@ -139,7 +139,7 @@ class AmeriaMethods
         try {
             $client = Http::post("https://services{$this->mode}.ameriabank.am/VPOS/api/VPOS/InitPayment", $parameters);
         } catch (Exception $e) {
-            throw new Exception($this->PROVIDER . ' API error: ' . $e->getMessage());
+            throw new Exception(AmeriaBankVPOS::PROVIDER . ' API error: ' . $e->getMessage());
         }
 
         $response = json_decode($client, true);
@@ -147,7 +147,7 @@ class AmeriaMethods
         if ($response['ResponseCode'] === 1) {
             redirect("https://services.ameriabank.am/VPOS/Payments/Pay?id={$response['PaymentID']}&lang={$language}")->send();
         } else {
-            throw new Exception($this->PROVIDER . ' API error: ' . $response['ResponseMessage']);
+            throw new Exception(AmeriaBankVPOS::PROVIDER . ' API error: ' . $response['ResponseMessage']);
         }
     }
 

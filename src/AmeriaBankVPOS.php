@@ -8,6 +8,7 @@ use Exception;
 
 class AmeriaBankVPOS extends AmeriaMethods implements AmeriaInterface
 {
+    protected const PROVIDER = 'AMERIABANK';
     /**
      * @var string|mixed
      */
@@ -18,7 +19,6 @@ class AmeriaBankVPOS extends AmeriaMethods implements AmeriaInterface
     protected string $currency;
     protected string $mode;
     protected string $language;
-    protected string $PROVIDER;
 
     /**
      * AmeriaBankVPOS constructor.
@@ -32,7 +32,6 @@ class AmeriaBankVPOS extends AmeriaMethods implements AmeriaInterface
         $this->currency = config('ameriabankvpos.Currency');
         $this->language = config('ameriabankvpos.Language');
         $this->mode = config('ameriabankvpos.TestMode') ? 'test' : '';
-        $this->PROVIDER = 'AMERIABANK';
     }
 
     /**
@@ -48,7 +47,7 @@ class AmeriaBankVPOS extends AmeriaMethods implements AmeriaInterface
         try {
             $client = Http::post($url, $parameters);
         } catch (Exception $e) {
-            throw new Exception($this->PROVIDER . ' API error: ' . $e->getMessage());
+            throw new Exception(self::PROVIDER . ' API error: ' . $e->getMessage());
         }
 
         return json_decode($client->body(), true);
@@ -67,7 +66,7 @@ class AmeriaBankVPOS extends AmeriaMethods implements AmeriaInterface
         $transaction->order_id = $response["OrderID"];
         $transaction->user_id = optional(auth()->user())->id;
         $transaction->payment_id = $payment_id;
-        $transaction->Provider = $this->PROVIDER;
+        $transaction->Provider = self::PROVIDER;
         $transaction->fill($response)->save();
 
         return $transaction;
