@@ -2,8 +2,6 @@
 
 namespace Ayvazyan10\AmeriaBankVPOS;
 
-use Ayvazyan10\AmeriaBankVPOS\Facades\AmeriaBankVPOS as AmeriaFacade;
-use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
 
 class AmeriaBankVPOSServiceProvider extends ServiceProvider
@@ -24,9 +22,6 @@ class AmeriaBankVPOSServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->bootForConsole();
         }
-
-        $loader = AliasLoader::getInstance();
-        $loader->alias('AmeriaBankVPOS', AmeriaFacade::class);
     }
 
     /**

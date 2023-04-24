@@ -1,6 +1,6 @@
 {
     "name": "ayvazyan10/ameriabankvpos",
-    "description": "AmeriaBank VPOS API service for Laravel",
+    "description": "AmeriaBank VPOS service for Laravel",
     "type": "library",
     "license": "MIT",
     "authors": [
@@ -42,7 +42,7 @@
                 "Ayvazyan10\\AmeriaBankVPOS\\AmeriaBankVPOSServiceProvider"
             ],
             "aliases": {
-                "AmeriaBankVPOS": "AmeriaBankVPOS"
+                "AmeriaBankVPOS": "Ayvazyan10\\AmeriaBankVPOS\\Facades\\AmeriaBankVPOS"
             }
         }
     }
