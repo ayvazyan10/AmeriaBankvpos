@@ -133,7 +133,7 @@ class AmeriaMethods
             "Currency" => $currency === null ? $this->currency : $currency,
             "Amount" => $amount,
             "OrderID" => $orderId,
-            "Description" => $description,
+            "Description" => $description === null ? '' : $description,
         ];
 
         try {
