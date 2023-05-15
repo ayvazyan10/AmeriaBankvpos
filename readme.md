@@ -37,7 +37,7 @@ Here is an example of how to use the AmeriaBankVPOS facade or helper in your Lar
 use Ayvazyan10\AmeriaBankVPOS\Facades\AmeriaBankVPOS;
 
 // Process the payment with facade and redirect to AmeriaBank payment interface
-AmeriaBankVPOS::pay($amount, $orderId, $description, $currency, $language);
+AmeriaBankVPOS::pay($amount, $orderId, array $options);
 
 // or with helper
 
