@@ -42,7 +42,7 @@ AmeriaBankVPOS::pay($amount, $orderId, $description, $currency, $language);
 // or with helper
 
 // Process the payment with helper and redirect to AmeriaBank payment interface
-ameriabank()->pay($amount, $orderId, $description, $currency, $language);
+ameriabank()->pay($amount, $orderId, array $options);
 
 // Check the payment status and return the transaction details
 $response = AmeriaBankVPOS::check($request);
@@ -77,13 +77,7 @@ public function check($request): array;
 
 public function getPaymentDetails(int|string $paymentId): array;
 
-public function pay(
-    int|float $amount,
-    int       $orderId,
-    string    $description = null,
-    string    $currency = null,
-    string    $language = null
-): void;
+public function pay(int|float $amount, int $orderId, array $options = []): void;
 
 public function refund(int|string $paymentId, int|float $refundAmount): array;
 ````
@@ -98,19 +92,28 @@ $amount = 100; // minimum amount while testing is 10 AMD
 $orderId = 1; // in test mode order id should be from 2923001 to 2924000
 $description = 'Test Payment'; // optional
 
-AmeriaBankVPOS::pay($amount, $orderId, $description);
+AmeriaBankVPOS::pay($amount, $orderId, ['Description' => $description]);
 ```
-### Example 2: Payment with Custom Currency and Language
+### Example 2: Payment with Custom Currency and Language, also redirect to different page
 ``` php
 use Ayvazyan10\AmeriaBankVPOS\Facades\AmeriaBankVPOS;
+
+// NOTE. Array is optional and default data injecting from configuration file
 
 $amount = 100;
 $orderId = 1;
 $description = 'Test Payment'; // optional
 $currency = '840'; // optional - currency ISO code (current:USD)
 $language = 'en'; // optional
+$routeName = 'my.new.route.name';
+$opaque = 'Some additional information';
 
-AmeriaBankVPOS::pay($amount, $orderId, $description, $currency, $language);
+AmeriaBankVPOS::pay($amount, $orderId, [
+    'Currecny' => $currency,
+    'Language' => $language,
+    'BackURL' => $routeName,
+    'Opaque' = $opaque,
+]);
 ```
 ### Example 3: Handling the Payment Response
 ```` php
