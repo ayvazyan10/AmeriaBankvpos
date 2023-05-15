@@ -1,6 +1,6 @@
 <?php
 
-namespace Ayvazyan10\Models;
+namespace Ayvazyan10\AmeriaBankVPOS\Model;
 
 use Illuminate\Database\Eloquent\Model;
 

@@ -2,7 +2,7 @@
 
 namespace Ayvazyan10\AmeriaBankVPOS;
 
-use Ayvazyan10\Models\AmeriaBankTransaction;
+use Ayvazyan10\AmeriaBankVPOS\Model\AmeriaBankTransaction;
 use Illuminate\Support\Facades\Http;
 use Exception;
 use Illuminate\Support\Str;
