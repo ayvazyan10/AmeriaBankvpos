@@ -105,13 +105,13 @@ $orderId = 1;
 $description = 'Test Payment'; // optional
 $currency = '840'; // optional - currency ISO code (current:USD)
 $language = 'en'; // optional
-$routeName = route('my.rounte.name'); // or just url: https://....
+$BackURL = route('my.rounte.name'); // or just url: https://....
 $opaque = 'Some additional information';
 
 AmeriaBankVPOS::pay($amount, $orderId, [
     'Currecny' => $currency,
     'Language' => $language,
-    'BackURL' => $routeName,
+    'BackURL' => $BackURL,
     'Opaque' = $opaque,
 ]);
 ```
