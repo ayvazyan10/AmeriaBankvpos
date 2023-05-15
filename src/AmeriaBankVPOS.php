@@ -5,10 +5,18 @@ namespace Ayvazyan10\AmeriaBankVPOS;
 use Ayvazyan10\Models\AmeriaBankTransaction;
 use Illuminate\Support\Facades\Http;
 use Exception;
+use Illuminate\Support\Str;
 
-class AmeriaBankVPOS extends AmeriaMethods implements AmeriaInterface
+class AmeriaBankVPOS implements AmeriaInterface
 {
-    protected const PROVIDER = 'AMERIABANK';
+    private const PROVIDER = 'AMERIABANK';
+    private const CANCEL_ENDPOINT = '/VPOS/api/VPOS/CancelPayment';
+    private const GET_ENDPOINT = '/VPOS/api/VPOS/GetPaymentDetails';
+    private const INIT_ENDPOINT = '/VPOS/api/VPOS/InitPayment';
+    private const REFUND_ENDPOINT = '/VPOS/api/VPOS/RefundPayment';
+    private const MAKE_BIND_ENDPOINT = '/VPOS/api/VPOS/MakeBindingPayment?';
+    private const GET_BINDINGS_ENDPOINT = '/VPOS/api/VPOS/GetBindings';
+
     /**
      * @var string|mixed
      */
@@ -31,7 +39,7 @@ class AmeriaBankVPOS extends AmeriaMethods implements AmeriaInterface
         $this->backUrl = route(config('ameriabankvpos.BackUrl'));
         $this->currency = config('ameriabankvpos.Currency');
         $this->language = config('ameriabankvpos.Language');
-        $this->mode = config('ameriabankvpos.TestMode') ? 'test' : '';
+        $this->mode = config('ameriabankvpos.TestMode') === true ? 'test' : '';
     }
 
     /**
@@ -70,5 +78,232 @@ class AmeriaBankVPOS extends AmeriaMethods implements AmeriaInterface
         $transaction->fill($response)->save();
 
         return $transaction;
+    }
+
+    /**
+     * Cancel a specific payment.
+     *
+     * @param int|string $paymentId // Payment ID to be canceled
+     * @return array // Array containing cancellation status and details
+     * @throws Exception // If any error occurs during the API request
+     */
+    public function cancelPayment(int|string $paymentId): array
+    {
+        $parameters = [
+            "PaymentID" => $paymentId,
+            "Username" => $this->username,
+            "Password" => $this->password,
+        ];
+
+        $response = $this->sendRequest("https://services{$this->mode}.ameriabank.am" . self::CANCEL_ENDPOINT, $parameters);
+
+        if ($response["ResponseCode"] != '00') {
+            return [
+                "status" => "FAIL",
+                "response" => $response
+            ];
+        }
+
+        return [
+            "status" => "SUCCESS",
+            "response" => $response
+        ];
+    }
+
+    /**
+     * Check the payment status and return the transaction details.
+     *
+     * @param $request // Incoming request data
+     * @return array // Array containing transaction status and details
+     * @throws Exception // If any error occurs during the API request
+     */
+    public function check($request): array
+    {
+        $order_id = $request->input('orderID');
+        $payment_id = $request->input('paymentID');
+
+        if (empty($order_id)) {
+            throw new Exception(self::PROVIDER . ' API error: Empty OrderID field');
+        }
+
+        $parameters = [
+            "Username" => $this->username,
+            "Password" => $this->password,
+            "PaymentID" => $payment_id,
+        ];
+
+        $response = $this->sendRequest("https://services{$this->mode}.ameriabank.am" . self::GET_ENDPOINT, $parameters);
+
+        $transaction = $this->saveTransaction($response, $payment_id);
+
+        if ($response["ResponseCode"] != '00') {
+            return [
+                "status" => "FAIL",
+                "transaction" => $transaction,
+                "response" => $response
+            ];
+        }
+
+        return [
+            "status" => "SUCCESS",
+            "transaction" => $transaction,
+            "response" => $response
+        ];
+    }
+
+    /**
+     * Get the details of a specific payment.
+     *
+     * @param int|string $paymentId The unique ID of the payment to retrieve details for.
+     * @return array The details of the payment as an associative array.
+     * @throws Exception If the payment ID does not exist or the HTTP request fails.
+     */
+    public function getPaymentDetails(int|string $paymentId): array
+    {
+        $url = "https://services{$this->mode}.ameriabank.am" . self::GET_ENDPOINT;
+
+        try {
+            $response = Http::post($url, [
+                'PaymentID' => $paymentId,
+                'Username' => $this->username,
+                'Password' => $this->password,
+            ]);
+
+            $responseData = json_decode($response, true);
+
+            if (isset($responseData['Message'])) {
+                throw new Exception('Payment ID not found or an error occurred: ' . $responseData['Message']);
+            }
+
+            return $responseData;
+        } catch (\Illuminate\Http\Client\RequestException $e) {
+            throw new Exception('AmeriaBank HTTP request error: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Process the payment and redirect to AMERIABANK payment interface.
+     *
+     * @param int|float $amount // Amount to Charge
+     * @param int $orderId // Payment Unique Order ID
+     * @param array $options // Additional information about payment with array[]
+     * @throws Exception // If any error occurs during the API request
+     */
+    public function pay(int|float $amount, int $orderId, array $options = []): void
+    {
+        $parameters = [
+            "ClientID" => $this->clientId,
+            "Username" => $this->username,
+            "Password" => $this->password,
+            "Amount" => $amount,
+            "OrderID" => $orderId,
+            "BackURL" => empty($options["BackURL"]) ? $this->backUrl : $options["BackURL"],
+            "Language" => empty($options["Language"]) ? $this->language : $options["Language"],
+            "Currency" => empty($options["Currency"]) ? $this->currency : $options["Currency"],
+            "Description" => empty($options["Description"]) ? '' : $options["Description"],
+            "Opaque" => empty($options["Opaque"]) ? ' ' : $options["Opaque"],
+        ];
+
+        try {
+            $client = Http::post("https://services{$this->mode}.ameriabank.am" . self::INIT_ENDPOINT, $parameters);
+        } catch (Exception $e) {
+            throw new Exception(self::PROVIDER . ' API error: ' . $e->getMessage());
+        }
+
+        $response = json_decode($client, true);
+
+        if ($response['ResponseCode'] === 1) {
+            redirect("https://services{$this->mode}.ameriabank.am/VPOS/Payments/Pay?id={$response['PaymentID']}&lang={$parameters["Language"]}")->send();
+        } else {
+            throw new Exception(self::PROVIDER . ' API error: ' . $response['ResponseMessage']);
+        }
+    }
+
+    /**
+     * Refund a specific payment partially.
+     *
+     * @param int|string $paymentId // Payment ID to be refunded
+     * @param int|float $refundAmount // Refund amount
+     * @return array // Array containing refund status and details
+     * @throws Exception // If any error occurs during the API request
+     */
+    public function refund(int|string $paymentId, int|float $refundAmount): array
+    {
+        $parameters = [
+            "Username" => $this->username,
+            "Password" => $this->password,
+            "PaymentID" => $paymentId,
+            "Amount" => $refundAmount
+        ];
+
+        $response = $this->sendRequest("https://services{$this->mode}.ameriabank.am" . self::REFUND_ENDPOINT, $parameters);
+
+        if ($response["ResponseCode"] != '00') {
+            return [
+                "status" => "FAIL",
+                "response" => $response
+            ];
+        }
+
+        return [
+            "status" => "SUCCESS",
+            "response" => $response
+        ];
+    }
+
+
+    /**
+     * Making a binding payment request to AmeriaBank.
+     *
+     * @param int|float $amount // Amount to Charge
+     * @param int $orderId // Payment Unique Order ID
+     * @param array $options // Additional information about payment with array[]
+     * @return void
+     * @throws Exception
+     */
+    public function makeBindingPayment(int|float $amount, int $orderId, array $options = []): void
+    {
+        $parameters = [
+            "ClientID" => $this->clientId,
+            "Username" => $this->username,
+            "Password" => $this->password,
+            "Amount" => $amount,
+            "OrderID" => $orderId,
+            "CardHolderID" => Str::uuid()->toString(),
+            "PaymentType" => 6,
+            "BackURL" => empty($options["BackURL"]) ? $this->backUrl : $options["BackURL"],
+            "Language" => empty($options["Language"]) ? $this->language : $options["Language"],
+            "Currency" => empty($options["Currency"]) ? $this->currency : $options["Currency"],
+            "Description" => empty($options["Description"]) ? ' ' : $options["Description"],
+            "Opaque" => empty($options["Opaque"]) ? ' ' : $options["Opaque"],
+        ];
+
+        redirect("https://services{$this->mode}.ameriabank.am" . self::MAKE_BIND_ENDPOINT . http_build_query($parameters))->send();
+    }
+
+    /**
+     * Gets information about bindings from AmeriaBank VPOS API.
+     *
+     * @return array
+     * @throws Exception
+     */
+    public function getBindings(): array
+    {
+        $parameters = [
+            "ClientID" => $this->clientId,
+            "Username" => $this->username,
+            "Password" => $this->password,
+            "PaymentType" => 6,
+        ];
+
+        try {
+            $client = Http::post("https://services{$this->mode}.ameriabank.am" . self::GET_BINDINGS_ENDPOINT, $parameters);
+        } catch (Exception $e) {
+            throw new Exception(self::PROVIDER . ' API error: ' . $e->getMessage());
+        }
+
+        $response = json_decode($client, true);
+
+        return $response;
     }
 }
