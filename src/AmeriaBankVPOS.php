@@ -5,7 +5,6 @@ namespace Ayvazyan10\AmeriaBankVPOS;
 use Ayvazyan10\AmeriaBankVPOS\Model\AmeriaBankTransaction;
 use Illuminate\Support\Facades\Http;
 use Exception;
-use Illuminate\Support\Str;
 
 class AmeriaBankVPOS implements AmeriaInterface
 {
@@ -16,6 +15,8 @@ class AmeriaBankVPOS implements AmeriaInterface
     private const REFUND_ENDPOINT = '/VPOS/api/VPOS/RefundPayment';
     private const MAKE_BIND_ENDPOINT = '/VPOS/api/VPOS/MakeBindingPayment?';
     private const GET_BINDINGS_ENDPOINT = '/VPOS/api/VPOS/GetBindings';
+    private const DEACTIVATE_BINDING_ENDPOINT = '/VPOS/api/VPOS/DeactivateBinding';
+    private const ACTIVATE_BINDING_ENDPOINT = '/VPOS/api/VPOS/ActivateBinding';
 
     /**
      * @var string|mixed
@@ -202,6 +203,7 @@ class AmeriaBankVPOS implements AmeriaInterface
             "Currency" => empty($options["Currency"]) ? $this->currency : $options["Currency"],
             "Description" => empty($options["Description"]) ? '' : $options["Description"],
             "Opaque" => empty($options["Opaque"]) ? ' ' : $options["Opaque"],
+            "CardHolderID" => empty($options["CardHolderID"]) ? '' : $options["CardHolderID"],
         ];
 
         try {
@@ -251,17 +253,16 @@ class AmeriaBankVPOS implements AmeriaInterface
         ];
     }
 
-
     /**
      * Making a binding payment request to AmeriaBank.
      *
      * @param int|float $amount // Amount to Charge
      * @param int $orderId // Payment Unique Order ID
      * @param array $options // Additional information about payment with array[]
-     * @return void
-     * @throws Exception
+     * @return array
+     * @throws Exception // If any error occurs during the API request
      */
-    public function makeBindingPayment(int|float $amount, int $orderId, array $options = []): void
+    public function makeBindingPayment(int|float $amount, int $orderId, array $options = []): array
     {
         $parameters = [
             "ClientID" => $this->clientId,
@@ -269,16 +270,22 @@ class AmeriaBankVPOS implements AmeriaInterface
             "Password" => $this->password,
             "Amount" => $amount,
             "OrderID" => $orderId,
-            "CardHolderID" => Str::uuid()->toString(),
             "PaymentType" => 6,
             "BackURL" => empty($options["BackURL"]) ? $this->backUrl : $options["BackURL"],
             "Language" => empty($options["Language"]) ? $this->language : $options["Language"],
             "Currency" => empty($options["Currency"]) ? $this->currency : $options["Currency"],
             "Description" => empty($options["Description"]) ? ' ' : $options["Description"],
             "Opaque" => empty($options["Opaque"]) ? ' ' : $options["Opaque"],
+            "CardHolderID" => empty($options["CardHolderID"]) ? ' ' : $options["CardHolderID"],
         ];
 
-        redirect("https://services{$this->mode}.ameriabank.am" . self::MAKE_BIND_ENDPOINT . http_build_query($parameters))->send();
+        try {
+            $client = Http::post("https://services{$this->mode}.ameriabank.am" . self::MAKE_BIND_ENDPOINT, $parameters);
+        } catch (Exception $e) {
+            throw new Exception(self::PROVIDER . ' API error: ' . $e->getMessage());
+        }
+
+        return json_decode($client, true);
     }
 
     /**
@@ -302,8 +309,53 @@ class AmeriaBankVPOS implements AmeriaInterface
             throw new Exception(self::PROVIDER . ' API error: ' . $e->getMessage());
         }
 
-        $response = json_decode($client, true);
+        return json_decode($client, true);
+    }
 
-        return $response;
+    /**
+     * Deactivate a binding with the given CardHolderID.
+     *
+     * @param string $cardHolderId The CardHolderID of the binding to deactivate
+     * @throws Exception // If any error occurs during the API request
+     */
+    public function deactivateBinding(string $cardHolderId): array
+    {
+        $parameters = [
+            "ClientID" => $this->clientId,
+            "Username" => $this->username,
+            "Password" => $this->password,
+            "PaymentType" => 6,
+        ];
+
+        try {
+            $client = Http::post("https://services{$this->mode}.ameriabank.am" . self::DEACTIVATE_BINDING_ENDPOINT, $parameters);
+        } catch (Exception $e) {
+            throw new Exception(self::PROVIDER . ' API error: ' . $e->getMessage());
+        }
+
+        return json_decode($client, true);
+    }
+
+    /**
+     * Activate a binding with the given CardHolderID.
+     * @param string $cardHolderId The CardHolderID of the binding to activate
+     * @throws Exception // If any error occurs during the API request
+     */
+    public function activateBinding(string $cardHolderId): array
+    {
+        $parameters = [
+            "ClientID" => $this->clientId,
+            "Username" => $this->username,
+            "Password" => $this->password,
+            "PaymentType" => 6,
+        ];
+
+        try {
+            $client = Http::post("https://services{$this->mode}.ameriabank.am" . self::ACTIVATE_BINDING_ENDPOINT, $parameters);
+        } catch (Exception $e) {
+            throw new Exception(self::PROVIDER . ' API error: ' . $e->getMessage());
+        }
+
+        return json_decode($client, true);
     }
 }

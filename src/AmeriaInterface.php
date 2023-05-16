@@ -14,7 +14,11 @@ interface AmeriaInterface
 
     public function refund(int|string $paymentId, int|float $refundAmount): array;
 
-    public function makeBindingPayment(int|float $amount, int $orderId, array $options = []): void;
+    public function makeBindingPayment(int|float $amount, int $orderId, array $options = []): array;
 
     public function getBindings(): array;
+
+    public function deactivateBinding(string $cardHolderId): array;
+
+    public function activateBinding(string $cardHolderId): array;
 }
