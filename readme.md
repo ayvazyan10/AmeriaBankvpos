@@ -81,6 +81,8 @@ public function pay(int|float $amount, int $orderId, array $options = []): void;
 
 public function refund(int|string $paymentId, int|float $refundAmount): array;
 
+public function makeBindingPayment(int|float $amount, int $orderId, array $options = []): array
+
 public function getBindings(): array;
 
 public function deactivateBinding(string $cardHolderId): array;
@@ -111,7 +113,7 @@ $orderId = 1;
 $description = 'Test Payment'; // optional
 $currency = '840'; // optional - currency ISO code (current:USD)
 $language = 'en'; // optional
-$BackURL = route('my.rounte.name'); // or just url: https://....
+$BackURL = route('my.rounte.name'); // or just url: "https://...."
 $opaque = 'Some additional information';
 
 AmeriaBankVPOS::pay($amount, $orderId, [
@@ -217,6 +219,45 @@ public function cancelPayment($paymentId)
 In this example, the cancelPayment method is called with the $paymentId parameter. Inside the try block, the AmeriaBankVPOS::cancelPayment() method is called with the provided payment ID to initiate a payment cancellation operation. The method returns an associative array with two keys: "status" and "response". These keys contain the cancellation status and details respectively.
 
 After calling the cancelPayment method, you can handle the returned details as needed. For example, you can check the "status" key to see if the cancellation was successful or not, and use the "response" key to get more details about the cancellation operation. In case an exception is thrown during the API request, the catch block will be executed and you can handle the error as needed, such as logging it or returning an error response.
+
+### Example 7: Binding Payments (Subscribe User Card)
+```` php
+use Ayvazyan10\AmeriaBankVPOS\Facades\AmeriaBankVPOS;
+use Exception;
+
+// In your controller method or anywhere else
+public function payForBinding()
+{
+    $resp = ameriabank()->makeBindingPayment(10, '3073035', [
+        'CardHolderID' => 'UEX1'
+    ]);
+
+    dd($resp);
+    redirect("https://servicestest.ameriabank.am/VPOS/Payments/Pay?id=89C67E87-378F-4C50-8622-8AA8844ADC63&lang=en")->send();
+
+    // We passing CardHolderID and say with it that this payment need to subscribe
+    // for first time
+    ameriabank()->pay(10, '3073028', [
+        'BackURL' => 'http://127.0.0.1:8000/my-back-route',
+        'CardHolderID' => 'EXAMPLEUNIQUESTRING'
+    ]);
+    
+    // After that we can use EXAMPLEUNIQUESTRING to charge user card 
+    // with simple post request
+
+    try {
+       $resp = ameriabank()->makeBindingPayment(10, '3073035', [
+        'CardHolderID' => 'EXAMPLEUNIQUESTRING'
+       ]);
+       
+       dd($resp); // Will return binding payment details in array
+       // if all is ok. We charged user card.
+    } catch (Exception $e) {
+        // Handle exception as needed
+        // For example: Log the error or return an error response
+    }
+}
+````
 
 ### 🛠️ Extending and Customizing
 If you need to extend or customize the package behavior, you can create your own class that extends the AmeriaBankVPOS class and override the methods as needed. Make sure to update the AmeriaBankVPOS alias in config/app.php to point to your custom class.
