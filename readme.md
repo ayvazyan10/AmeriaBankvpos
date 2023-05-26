@@ -228,13 +228,6 @@ use Exception;
 // In your controller method or anywhere else
 public function payForBinding()
 {
-    $resp = ameriabank()->makeBindingPayment(10, '3073035', [
-        'CardHolderID' => 'UEX1'
-    ]);
-
-    dd($resp);
-    redirect("https://servicestest.ameriabank.am/VPOS/Payments/Pay?id=89C67E87-378F-4C50-8622-8AA8844ADC63&lang=en")->send();
-
     // We passing CardHolderID and say with it that this payment need to subscribe
     // for first time
     ameriabank()->pay(10, '3073028', [
