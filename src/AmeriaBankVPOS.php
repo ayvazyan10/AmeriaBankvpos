@@ -325,6 +325,7 @@ class AmeriaBankVPOS implements AmeriaInterface
             "Username" => $this->username,
             "Password" => $this->password,
             "PaymentType" => 6,
+            "CardHolderID" => empty($cardHolderId) ? ' ' : $cardHolderId,
         ];
 
         try {
@@ -348,6 +349,7 @@ class AmeriaBankVPOS implements AmeriaInterface
             "Username" => $this->username,
             "Password" => $this->password,
             "PaymentType" => 6,
+            "CardHolderID" => empty($cardHolderId) ? ' ' : $cardHolderId,
         ];
 
         try {
