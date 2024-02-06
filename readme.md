@@ -37,12 +37,18 @@ Here is an example of how to use the AmeriaBankVPOS facade or helper in your Lar
 use Ayvazyan10\AmeriaBankVPOS\Facades\AmeriaBankVPOS;
 
 // Process the payment with facade and redirect to AmeriaBank payment interface
-AmeriaBankVPOS::pay($amount, $orderId, array $options);
-
+$initPayment = AmeriaBankVPOS::pay($amount, $orderId, array $options);
 // or with helper
-
 // Process the payment with helper and get success response to redirect AmeriaBank payment interface
-ameriabank()->pay($amount, $orderId, array $options);
+$initPayment = ameriabank()->pay($amount, $orderId, array $options);
+
+if($initPayment['status'] === "SUCCESS") {
+    // If you need to store payment id in your database
+    // For get full response use: $initPayment['response'];
+    $paymentId = $initPayment['paymentId'];
+    // Redirect to AmeriaBank payment interface
+    return redirect($initPayment['redirectUrl']);
+}
 
 // Check the payment status and return the transaction details
 $response = AmeriaBankVPOS::check($request);
@@ -81,7 +87,7 @@ public function pay(int|float $amount, int $orderId, array $options = []): array
 
 public function refund(int|string $paymentId, int|float $refundAmount): array;
 
-public function makeBindingPayment(int|float $amount, int $orderId, array $options = []): array
+public function makeBindingPayment(int|float $amount, int $orderId, array $options = []): array;
 
 public function getBindings(): array;
 
