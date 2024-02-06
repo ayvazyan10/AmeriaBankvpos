@@ -5,7 +5,7 @@
 
 [![Buy me a coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-Donate-yellow?style=for-the-badge&logo=buymeacoffee)](https://www.buymeacoffee.com/ayvazyan403)
 
-![Image Description](https://wedo.design/logo-black.svg)
+![Image Description](https://wedo.design/uploads/img/main/logo.svg)
 
 ### 🚀 Installation
 #### Install the package via Composer.
@@ -41,7 +41,7 @@ AmeriaBankVPOS::pay($amount, $orderId, array $options);
 
 // or with helper
 
-// Process the payment with helper and redirect to AmeriaBank payment interface
+// Process the payment with helper and get success response to redirect AmeriaBank payment interface
 ameriabank()->pay($amount, $orderId, array $options);
 
 // Check the payment status and return the transaction details
@@ -66,7 +66,7 @@ if ($response['status'] === 'SUCCESS') {
 ### 📋 Statuses
 This package returns the payment status as a string in the status key of the response array. The possible statuses are:
 
-- SUCCESS: The payment has been successfully processed.
+- SUCCESS: The payment approved and can be processed.
 - FAIL: The payment failed or was declined.
 
 ### ⚡ All Methods
@@ -77,7 +77,7 @@ public function check($request): array;
 
 public function getPaymentDetails(int|string $paymentId): array;
 
-public function pay(int|float $amount, int $orderId, array $options = []): void;
+public function pay(int|float $amount, int $orderId, array $options = []): array;
 
 public function refund(int|string $paymentId, int|float $refundAmount): array;
 
@@ -100,7 +100,15 @@ $amount = 100; // minimum amount while testing is 10 AMD
 $orderId = 1; // in test mode order id should be from 2923001 to 2924000
 $description = 'Test Payment'; // optional
 
-AmeriaBankVPOS::pay($amount, $orderId, ['Description' => $description]);
+$initPayment = AmeriaBankVPOS::pay($amount, $orderId, ['Description' => $description]);
+
+if($initPayment['status'] === "SUCCESS") {
+    // If you need to store payment id in your database
+    // For get full response use: $initPayment['response'];
+    $paymentId = $initPayment['paymentId'];
+    // Redirect to AmeriaBank payment interface
+    return redirect($initPayment['redirectUrl']);
+}
 ```
 ### Example 2: Payment with Custom Currency and Language, also redirect to different page
 ``` php
@@ -116,12 +124,20 @@ $language = 'en'; // optional
 $BackURL = route('my.rounte.name'); // or just url: "https://...."
 $opaque = 'Some additional information';
 
-AmeriaBankVPOS::pay($amount, $orderId, [
+$initPayment = AmeriaBankVPOS::pay($amount, $orderId, [
     'Currecny' => $currency,
     'Language' => $language,
     'BackURL' => $BackURL,
     'Opaque' = $opaque,
 ]);
+
+if($initPayment['status'] === "SUCCESS") {
+    // If you need to store payment id in your database
+    // For get full response use: $initPayment['response'];
+    $paymentId = $initPayment['paymentId'];
+    // Redirect to AmeriaBank payment interface
+    return redirect($initPayment['redirectUrl']);
+}
 ```
 ### Example 3: Handling the Payment Response
 ```` php

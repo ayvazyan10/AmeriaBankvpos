@@ -10,7 +10,7 @@ interface AmeriaInterface
 
     public function getPaymentDetails(int|string $paymentId): array;
 
-    public function pay(int|float $amount, int $orderId, array $options = []): void;
+    public function pay(int|float $amount, int $orderId, array $options = []): array;
 
     public function refund(int|string $paymentId, int|float $refundAmount): array;
 

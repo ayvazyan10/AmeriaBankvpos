@@ -190,7 +190,7 @@ class AmeriaBankVPOS implements AmeriaInterface
      * @param array $options // Additional information about payment with array[]
      * @throws Exception // If any error occurs during the API request
      */
-    public function pay(int|float $amount, int $orderId, array $options = []): void
+    public function pay(int|float $amount, int $orderId, array $options = []): array
     {
         $parameters = [
             "ClientID" => $this->clientId,
@@ -215,10 +215,21 @@ class AmeriaBankVPOS implements AmeriaInterface
         $response = json_decode($client, true);
 
         if ($response['ResponseCode'] === 1) {
-            redirect("https://services{$this->mode}.ameriabank.am/VPOS/Payments/Pay?id={$response['PaymentID']}&lang={$parameters["Language"]}")->send();
-        } else {
-            throw new Exception(self::PROVIDER . ' API error: ' . $response['ResponseMessage']);
+            $paymentId = $response['PaymentID'];
+            $redirectUrl = "https://services{$this->mode}.ameriabank.am/VPOS/Payments/Pay?id={$paymentId}&lang={$parameters["Language"]}";
+
+            return [
+                "status" => "SUCCESS",
+                "paymentId" => $paymentId,
+                "redirectUrl" => $redirectUrl,
+                "response" => $response
+            ];
         }
+
+        return [
+            "status" => "FAIL",
+            "response" => $response
+        ];
     }
 
     /**
