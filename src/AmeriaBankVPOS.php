@@ -128,7 +128,9 @@ class AmeriaBankVPOS implements AmeriaInterface
 
         $response = $this->sendRequest("https://services{$this->mode}.ameriabank.am" . self::GET_ENDPOINT, $parameters);
 
-        $transaction = $this->saveTransaction($response, $payment_id);
+        $transaction = config('ameriabankvpos.StoreTransactions')
+            ? $this->saveTransaction($response, $payment_id)
+            : null;
 
         if ($response["ResponseCode"] != '00') {
             return [

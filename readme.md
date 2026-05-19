@@ -21,11 +21,12 @@ composer require ayvazyan10/ameriabankvpos
 ```` bash
 php artisan vendor:publish --tag=ameriabankvpos.config
 ````
-#### (Optional) Publish and run the database migration if you want to store transactions.
+#### (Optional) To store transactions in the database, publish the migration and enable it in config.
 ```` bash
 php artisan vendor:publish --tag=ameriabankvpos.migrations
 php artisan migrate
 ````
+Then set `AMERIABANKVPOS_STORE_TRANSACTIONS=true` in your `.env` file. When disabled (default), `check()` returns `"transaction" => null` instead of a database record.
 ### ⚙️ Configuration
 After publishing the configuration file, you should set your AmeriaBank VPOS credentials/options in the config/ameriabankvpos.php file or in your .env file:
 ```` ini
@@ -34,6 +35,7 @@ AMERIABANKVPOS_USERNAME=your_username
 AMERIABANKVPOS_PASSWORD=your_password
 AMERIABANKVPOS_BACK_URL=your_back_url_route_name
 AMERIABANKVPOS_TEST_MODE=true_or_false
+AMERIABANKVPOS_STORE_TRANSACTIONS=true_or_false
 AMERIABANKVPOS_CURRENCY=your_currency
 AMERIABANKVPOS_LANGUAGE=your_language
 ````

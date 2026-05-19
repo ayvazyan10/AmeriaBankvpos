@@ -35,6 +35,9 @@ return [
     // Testing mode - true|false
     "TestMode" => env('AMERIABANKVPOS_TEST_MODE', false),
 
+    // Store transactions in database - requires published migration
+    "StoreTransactions" => env('AMERIABANKVPOS_STORE_TRANSACTIONS', false),
+
     // Route:name - redirect back url from bank - SUCCESS|FAIL
     "BackUrl" => env('AMERIABANKVPOS_BACK_URL') ? env('AMERIABANKVPOS_BACK_URL') : 'home',
 ];
