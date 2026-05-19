@@ -3,6 +3,7 @@
 namespace Ayvazyan10\AmeriaBankVPOS;
 
 use Ayvazyan10\AmeriaBankVPOS\Model\AmeriaBankTransaction;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Exception;
 
@@ -44,12 +45,10 @@ class AmeriaBankVPOS implements AmeriaInterface
     }
 
     /**
-     * Send an HTTP request to the given URL with the provided arguments.
-     *
-     * @param string $url // URL to send the request to
-     * @param array $parameters // Arguments to be sent in the request body
-     * @return array // Response data as an associative array
-     * @throws Exception // If any error occurs during the API request
+     * @param string $url
+     * @param array $parameters
+     * @return array
+     * @throws Exception
      */
     final protected function sendRequest(string $url, array $parameters): array
     {
@@ -63,11 +62,9 @@ class AmeriaBankVPOS implements AmeriaInterface
     }
 
     /**
-     * Save the transaction details to the database.
-     *
-     * @param array $response // Response data from the API
-     * @param string $payment_id // Payment ID received from the API
-     * @return AmeriaBankTransaction // Saved transaction object
+     * @param array $response
+     * @param string $payment_id
+     * @return AmeriaBankTransaction
      */
     final protected function saveTransaction(array $response, string $payment_id): AmeriaBankTransaction
     {
@@ -82,13 +79,11 @@ class AmeriaBankVPOS implements AmeriaInterface
     }
 
     /**
-     * Cancel a specific payment.
-     *
-     * @param int|string $paymentId // Payment ID to be canceled
-     * @return array // Array containing cancellation status and details
-     * @throws Exception // If any error occurs during the API request
+     * @param int|string $paymentId
+     * @return array
+     * @throws Exception
      */
-    public function cancelPayment(int|string $paymentId): array
+    public function cancelPayment($paymentId): array
     {
         $parameters = [
             "PaymentID" => $paymentId,
@@ -112,13 +107,11 @@ class AmeriaBankVPOS implements AmeriaInterface
     }
 
     /**
-     * Check the payment status and return the transaction details.
-     *
-     * @param $request // Incoming request data
-     * @return array // Array containing transaction status and details
-     * @throws Exception // If any error occurs during the API request
+     * @param Request $request
+     * @return array
+     * @throws Exception
      */
-    public function check($request): array
+    public function check(Request $request): array
     {
         $order_id = $request->input('orderID');
         $payment_id = $request->input('paymentID');
@@ -153,13 +146,11 @@ class AmeriaBankVPOS implements AmeriaInterface
     }
 
     /**
-     * Get the details of a specific payment.
-     *
-     * @param int|string $paymentId The unique ID of the payment to retrieve details for.
-     * @return array The details of the payment as an associative array.
-     * @throws Exception If the payment ID does not exist or the HTTP request fails.
+     * @param int|string $paymentId
+     * @return array
+     * @throws Exception
      */
-    public function getPaymentDetails(int|string $paymentId): array
+    public function getPaymentDetails($paymentId): array
     {
         $url = "https://services{$this->mode}.ameriabank.am" . self::GET_ENDPOINT;
 
@@ -183,14 +174,13 @@ class AmeriaBankVPOS implements AmeriaInterface
     }
 
     /**
-     * Process the payment and redirect to AMERIABANK payment interface.
-     *
-     * @param int|float $amount // Amount to Charge
-     * @param int $orderId // Payment Unique Order ID
-     * @param array $options // Additional information about payment with array[]
-     * @throws Exception // If any error occurs during the API request
+     * @param int|float $amount
+     * @param int $orderId
+     * @param array $options
+     * @return array
+     * @throws Exception
      */
-    public function pay(int|float $amount, int $orderId, array $options = []): array
+    public function pay($amount, int $orderId, array $options = []): array
     {
         $parameters = [
             "ClientID" => $this->clientId,
@@ -233,14 +223,12 @@ class AmeriaBankVPOS implements AmeriaInterface
     }
 
     /**
-     * Refund a specific payment partially.
-     *
-     * @param int|string $paymentId // Payment ID to be refunded
-     * @param int|float $refundAmount // Refund amount
-     * @return array // Array containing refund status and details
-     * @throws Exception // If any error occurs during the API request
+     * @param int|string $paymentId
+     * @param int|float $refundAmount
+     * @return array
+     * @throws Exception
      */
-    public function refund(int|string $paymentId, int|float $refundAmount): array
+    public function refund($paymentId, $refundAmount): array
     {
         $parameters = [
             "Username" => $this->username,
@@ -265,15 +253,13 @@ class AmeriaBankVPOS implements AmeriaInterface
     }
 
     /**
-     * Making a binding payment request to AmeriaBank.
-     *
-     * @param int|float $amount // Amount to Charge
-     * @param int $orderId // Payment Unique Order ID
-     * @param array $options // Additional information about payment with array[]
+     * @param int|float $amount
+     * @param int $orderId
+     * @param array $options
      * @return array
-     * @throws Exception // If any error occurs during the API request
+     * @throws Exception
      */
-    public function makeBindingPayment(int|float $amount, int $orderId, array $options = []): array
+    public function makeBindingPayment($amount, int $orderId, array $options = []): array
     {
         $parameters = [
             "ClientID" => $this->clientId,
@@ -300,8 +286,6 @@ class AmeriaBankVPOS implements AmeriaInterface
     }
 
     /**
-     * Gets information about bindings from AmeriaBank VPOS API.
-     *
      * @return array
      * @throws Exception
      */
@@ -324,10 +308,9 @@ class AmeriaBankVPOS implements AmeriaInterface
     }
 
     /**
-     * Deactivate a binding with the given CardHolderID.
-     *
-     * @param string $cardHolderId The CardHolderID of the binding to deactivate
-     * @throws Exception // If any error occurs during the API request
+     * @param string $cardHolderId
+     * @return array
+     * @throws Exception
      */
     public function deactivateBinding(string $cardHolderId): array
     {
@@ -349,9 +332,9 @@ class AmeriaBankVPOS implements AmeriaInterface
     }
 
     /**
-     * Activate a binding with the given CardHolderID.
-     * @param string $cardHolderId The CardHolderID of the binding to activate
-     * @throws Exception // If any error occurs during the API request
+     * @param string $cardHolderId
+     * @return array
+     * @throws Exception
      */
     public function activateBinding(string $cardHolderId): array
     {

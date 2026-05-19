@@ -5,19 +5,25 @@
 
 [![Buy me a coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-Donate-yellow?style=for-the-badge&logo=buymeacoffee)](https://www.buymeacoffee.com/ayvazyan403)
 
-![Image Description](https://wedo.design/uploads/img/main/logo.svg)
+![Image Description](https://wedo.design/storage/uploads/img/main/logo-black.svg)
+
+### Requirements
+
+- PHP >= 7.4
+- Laravel 7.x – 13.x
 
 ### 🚀 Installation
 #### Install the package via Composer.
 ```` bash
 composer require ayvazyan10/ameriabankvpos
 ````
-#### Release the configuration file and database migration.
+#### Publish the configuration file.
 ```` bash
-php artisan vendor:publish --provider="Ayvazyan10\AmeriaBankVPOS\AmeriaBankVPOSServiceProvider"
+php artisan vendor:publish --tag=ameriabankvpos.config
 ````
-This will create a [config/ameriabankvpos.php] and [database/migrations] files in your application.
+#### (Optional) Publish and run the database migration if you want to store transactions.
 ```` bash
+php artisan vendor:publish --tag=ameriabankvpos.migrations
 php artisan migrate
 ````
 ### ⚙️ Configuration
@@ -77,17 +83,17 @@ This package returns the payment status as a string in the status key of the res
 
 ### ⚡ All Methods
 ```` php
-public function cancelPayment(int|string $paymentId): array;
+public function cancelPayment($paymentId): array;
 
-public function check($request): array;
+public function check(Request $request): array;
 
-public function getPaymentDetails(int|string $paymentId): array;
+public function getPaymentDetails($paymentId): array;
 
-public function pay(int|float $amount, int $orderId, array $options = []): array;
+public function pay($amount, int $orderId, array $options = []): array;
 
-public function refund(int|string $paymentId, int|float $refundAmount): array;
+public function refund($paymentId, $refundAmount): array;
 
-public function makeBindingPayment(int|float $amount, int $orderId, array $options = []): array;
+public function makeBindingPayment($amount, int $orderId, array $options = []): array;
 
 public function getBindings(): array;
 
@@ -131,10 +137,10 @@ $BackURL = route('my.rounte.name'); // or just url: "https://...."
 $opaque = 'Some additional information';
 
 $initPayment = AmeriaBankVPOS::pay($amount, $orderId, [
-    'Currecny' => $currency,
+    'Currency' => $currency,
     'Language' => $language,
     'BackURL' => $BackURL,
-    'Opaque' = $opaque,
+    'Opaque' => $opaque,
 ]);
 
 if($initPayment['status'] === "SUCCESS") {

@@ -2,19 +2,37 @@
 
 namespace Ayvazyan10\AmeriaBankVPOS;
 
+use Illuminate\Http\Request;
+
 interface AmeriaInterface
 {
-    public function cancelPayment(int|string $paymentId): array;
+    /**
+     * @param int|string $paymentId
+     */
+    public function cancelPayment($paymentId): array;
 
-    public function check($request): array;
+    public function check(Request $request): array;
 
-    public function getPaymentDetails(int|string $paymentId): array;
+    /**
+     * @param int|string $paymentId
+     */
+    public function getPaymentDetails($paymentId): array;
 
-    public function pay(int|float $amount, int $orderId, array $options = []): array;
+    /**
+     * @param int|float $amount
+     */
+    public function pay($amount, int $orderId, array $options = []): array;
 
-    public function refund(int|string $paymentId, int|float $refundAmount): array;
+    /**
+     * @param int|string $paymentId
+     * @param int|float $refundAmount
+     */
+    public function refund($paymentId, $refundAmount): array;
 
-    public function makeBindingPayment(int|float $amount, int $orderId, array $options = []): array;
+    /**
+     * @param int|float $amount
+     */
+    public function makeBindingPayment($amount, int $orderId, array $options = []): array;
 
     public function getBindings(): array;
 
