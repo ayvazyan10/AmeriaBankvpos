@@ -9,6 +9,10 @@ use Exception;
 
 class AmeriaBankVPOS implements AmeriaInterface
 {
+    // Redirect URL `type` parameter values for opening a specific payment page directly.
+    public const PAYMENT_TYPE_APPLE_PAY = 13;
+    public const PAYMENT_TYPE_CARD = 5;
+
     private const PROVIDER = 'AMERIABANK';
     private const CANCEL_ENDPOINT = '/VPOS/api/VPOS/CancelPayment';
     private const GET_ENDPOINT = '/VPOS/api/VPOS/GetPaymentDetails';
@@ -209,6 +213,13 @@ class AmeriaBankVPOS implements AmeriaInterface
         if ($response['ResponseCode'] === 1) {
             $paymentId = $response['PaymentID'];
             $redirectUrl = "https://services{$this->mode}.ameriabank.am/VPOS/Payments/Pay?id={$paymentId}&lang={$parameters["Language"]}";
+
+            // Optional `type` opens a specific payment page directly (13 Apple Pay, 5 card).
+            // Anything else is omitted so the bank performs device auto-detection.
+            $type = $options["Type"] ?? null;
+            if (in_array((int) $type, [self::PAYMENT_TYPE_CARD, self::PAYMENT_TYPE_APPLE_PAY], true)) {
+                $redirectUrl .= "&type=" . (int) $type;
+            }
 
             return [
                 "status" => "SUCCESS",

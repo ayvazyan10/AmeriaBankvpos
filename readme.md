@@ -282,6 +282,34 @@ public function payForBinding()
 }
 ````
 
+### Example 8: Apple Pay / opening a specific payment page directly
+By default the bank performs device auto-detection and shows the matching payment page.
+You may optionally pass a `Type` to open a specific page directly:
+
+- `AmeriaBankVPOS::PAYMENT_TYPE_APPLE_PAY` (13) → Apple Pay page
+- `AmeriaBankVPOS::PAYMENT_TYPE_CARD` (5) → Visa/MasterCard/ArCa page
+- omitted or any other value → device auto-detection (default behavior)
+
+This only affects the returned `redirectUrl`; `InitPayment` is unchanged and existing
+calls keep working as before.
+``` php
+use Ayvazyan10\AmeriaBankVPOS\Facades\AmeriaBankVPOS;
+
+// Open the Apple Pay page directly (redirectUrl gets &type=13 appended)
+$initPayment = AmeriaBankVPOS::pay($amount, $orderId, [
+    'Type' => AmeriaBankVPOS::PAYMENT_TYPE_APPLE_PAY,
+]);
+
+if ($initPayment['status'] === "SUCCESS") {
+    return redirect($initPayment['redirectUrl']);
+}
+```
+> Note: rendering the Apple Pay button and detecting whether the visitor's device
+> supports Apple Pay is your responsibility on the front end — it is outside the scope
+> of this package. Apple Pay cannot be used in the binding flow (Apple Pay cards cannot
+> be stored for future payments). When you read payment details, `PaymentType` is `13`
+> for Apple Pay and `ClientName` is empty.
+
 ### 🛠️ Extending and Customizing
 If you need to extend or customize the package behavior, you can create your own class that extends the AmeriaBankVPOS class and override the methods as needed. Make sure to update the AmeriaBankVPOS alias in config/app.php to point to your custom class.
 
